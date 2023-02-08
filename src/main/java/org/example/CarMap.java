@@ -7,12 +7,21 @@ import java.util.Map;
 public class CarMap implements ICarMap{
     private int mapWidth;
     private int mapHeight;
-    private int numWrongAnimals;
-    protected Map<Vector2d, Car> wrongCars; //auta przeszkadzajace
+    private int numWrongCars;
+    private Vector2d actualWrongFirstPosition;
+    //protected Map<Vector2d, Car> wrongCars; //auta przeszkadzajace
+    protected ArrayList<WrongCar> wrongCarList; //lista aut przeszkadzajacych
     protected Car car; //wlasciwe autko gracza
     public CarMap(Vector2d position, CarType type){
-        this.wrongCars = new HashMap<>();
-        this.car = new Car(position, type);
+        //this.wrongCars = new HashMap<>();
+        this.wrongCarList = new ArrayList<>();
+        this.car = new Car(position, type, this);
+    }
+    public int getNumWrongCars(){
+        return this.numWrongCars;
+    }
+    public Vector2d getActualWrongFirstPosition(){
+        return this.actualWrongFirstPosition;
     }
     public void setMapWidth(int mapWidth){
         this.mapWidth = mapWidth;
@@ -21,7 +30,10 @@ public class CarMap implements ICarMap{
         this.mapHeight = mapHeight;
     }
     public void setNumWrongAnimals(int numWrongAnimals){
-        this.numWrongAnimals = numWrongAnimals;
+        this.numWrongCars = numWrongAnimals;
+    }
+    public void setActualWrongFirstPosition(Vector2d position){
+        this.actualWrongFirstPosition = position;
     }
     public int getMapWidth(){
         return this.mapWidth;
@@ -32,6 +44,10 @@ public class CarMap implements ICarMap{
 //    public Vector2d getStartPosition(){
 //        return this.car.getCarPosition()startPosition;
 //    }
+    public void place(Vector2d position, WrongCar wrongCar) {
+        //wrongCars.put(position, wrongCar);
+        wrongCarList.add(wrongCar);
+    }
     @Override
     public boolean canMoveTo(Vector2d position) {
         if(position.getX() >= 0 && position.getX() < mapWidth && position.getY() >= 0 && position.getY() < mapHeight){
@@ -43,6 +59,15 @@ public class CarMap implements ICarMap{
     public boolean isOccupied(Vector2d position) {
         return car.getCarPosition().equals(position);
     }
+
+    public boolean isOccupiedWrong(Vector2d position) {
+        for (WrongCar value : this.wrongCarList) {
+            if (value.getCarPosition().equals(position)) {
+                return true;
+            }
+        }
+        return false;
+    }
 //    @Override
 //    public boolean place(Car car) {
 //        if(canMoveTo(car.getCarPosition())){
@@ -51,6 +76,14 @@ public class CarMap implements ICarMap{
 //        }
 //        return false;
 //    }
+    public WrongCar objectAtWrong(Vector2d position) {
+        for (WrongCar value : this.wrongCarList) {
+            if (value.getCarPosition().equals(position)) {
+                return value;
+            }
+        }
+        return null;
+    }
     public Car objectAt(Vector2d position) {
         if(isOccupied(position)){
             return car;

@@ -27,6 +27,14 @@ public class Vector2d {
     public String toString(){
         return "(" + x + ", " + y + ")";
     }
+    public Vector2d max(Vector2d other){ //porownanie wektorow o tych samych wspolrzednych y a innych x
+        if(this.getX() < other.getX()){
+            return other;
+        }
+        else{
+            return this;
+        }
+    }
     @Override
     public boolean equals(Object other) {
         if (this == other) return true;

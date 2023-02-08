@@ -28,7 +28,7 @@ public class MapVisualizer {
                             //builder.append(drawObjectPlant(new Vector2d(j, i)));
                         }
                         else{
-                            //builder.append(drawObjectPlant(new Vector2d(j, i)));
+                            builder.append(drawObjectWrongCar(new Vector2d(j, i)));
                         }
                     }
                 }
@@ -60,6 +60,20 @@ public class MapVisualizer {
         String result = null;
         if (this.map.isOccupied(currentPosition)) {
             Car object = this.map.objectAt(currentPosition);
+            if (object != null) {
+                result = object.toString();
+            } else {
+                result = EMPTY_CELL;
+            }
+        } else {
+            result = EMPTY_CELL;
+        }
+        return result;
+    }
+    private String drawObjectWrongCar(Vector2d currentPosition) {
+        String result = null;
+        if (this.map.isOccupiedWrong(currentPosition)) {
+            WrongCar object = this.map.objectAtWrong(currentPosition);
             if (object != null) {
                 result = object.toString();
             } else {
