@@ -22,54 +22,54 @@ public class App extends Application {
     private CarMap map;
     private SimulationEngine engine;
     private GridPane grid = new GridPane();
+    private Scene windowScene;
     public App(){
         int width = 4;
         int height = 4;
-        int timeSleep = 300;
+        int timeSleep = 600;
         windowHeight = fieldSize * (height+2);
         windowWidth = fieldSize * (width+2);
         this.map = new CarMap(new Vector2d(4, 0), CarType.T1);
         this.map.setMapHeight(5);
         this.map.setMapWidth(5);
         this.engine = new SimulationEngine(new Vector2d(4, 0), 3, new Vector2d(0, 3), map, this);
+        this.windowScene = new Scene(grid, 400, 300);
         engine.setMoveDelay(timeSleep);
 
     }
     @Override
     public void start(Stage primaryStage) {
-        // code to set up the window
-        primaryStage.setTitle(" Traffic Run! ");
-        primaryStage.setWidth(400);
-        primaryStage.setHeight(300);
-        GridPane root = new GridPane();
-        Button startButton = new Button("Start");
-        Label label = new Label(" welcome to the game! ");
-        root.add(label, 0, 0);
-        root.add(startButton, 1, 0);
-        root.setAlignment(Pos.CENTER);
-        startButton.setOnAction(event -> {
-            primaryStage.close();
-            Stage newWindow = new Stage();
-            newWindow.setTitle(" Traffic Run! ");
-            newWindow.setWidth(400);
-            newWindow.setHeight(300);
-            //StackPane root1 = new StackPane();
-            Scene scene = new Scene(grid, 400, 300);
-            //newGrid();
-            Thread thread = new Thread(engine);
-            thread.start();
-            engine.run();
-            newGrid();
-            newWindow.setScene(scene);
-            newWindow.show();
-//            Thread thread = new Thread(engine);
-//            thread.start();
 
-        });
+        newGrid();
+        VBox vBox = new VBox(grid);
 
-        Scene scene = new Scene(root, 400, 300);
+        Scene scene = new Scene(vBox, windowWidth, windowHeight);
+        String title = " Traffic Run! ";
+        primaryStage.setTitle(title);
+
+        vBox.getChildren().add(nextStepButton(primaryStage));
+
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        Thread thread = new Thread(engine);
+        thread.start();
+
+        engine.run();
+
+    }
+    public Button nextStepButton(Stage primaryStage) {
+        Button nextStepButton = new Button(" Next step! ");
+        nextStepButton.setOnAction((action) -> {
+            try {
+                Thread.sleep(600); //timeSleep
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            this.map.car.move();
+            this.refresh();
+        });
+        return nextStepButton;
     }
     public void newGrid(){
 

@@ -11,7 +11,7 @@ public class Main {
         System.out.println("Hello world!");
         //App app = new App(4, 4, 300);
         //app.init();
-        Application.launch(App.class);
+        Application.launch(StartWindow.class);
         //app.start(new Stage());
 //        CarMap map = new CarMap(new Vector2d(4, 0), CarType.T1);
 //        map.setMapHeight(5);
