@@ -27,7 +27,7 @@ public class StartWindow extends Application {
         setStartButton(startButton);
     }
     private static void setScene(Stage primaryStage, GridPane root) {
-        Scene scene = new Scene(root, 400, 520);
+        Scene scene = new Scene(root, 40, 52);
         primaryStage.setScene(scene);
         primaryStage.setTitle(" Start window ");
         primaryStage.show();

@@ -10,7 +10,7 @@ import java.io.FileNotFoundException;
 
 public class GuiElementBox {
     private ImageView image;
-    private VBox vBox = new VBox();
+    private VBox vBox;
 
     public GuiElementBox(String path, int size){
         try {

@@ -2,16 +2,11 @@ package org.example;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.HPos;
-import javafx.geometry.Pos;
-import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
@@ -23,16 +18,19 @@ public class App extends Application {
     private SimulationEngine engine;
     private GridPane grid = new GridPane();
     private Scene windowScene;
+    private VBox vBox;
+    private HBox hBox;
+    private ProgressBar progressBar;
     public App(){
-        int width = 4;
-        int height = 4;
+        int width = 10;
+        int height = 10;
         int timeSleep = 600;
         windowHeight = fieldSize * (height+2);
         windowWidth = fieldSize * (width+2);
         this.map = new CarMap(new Vector2d(4, 0), CarType.T1);
         this.map.setMapHeight(5);
         this.map.setMapWidth(5);
-        this.engine = new SimulationEngine(new Vector2d(4, 0), 3, new Vector2d(0, 3), map, this);
+        this.engine = new SimulationEngine(new Vector2d(4, 0), 3, map, this);
         this.windowScene = new Scene(grid, 400, 300);
         engine.setMoveDelay(timeSleep);
 
@@ -41,11 +39,14 @@ public class App extends Application {
     public void start(Stage primaryStage) {
 
         newGrid();
-        VBox vBox = new VBox(grid);
+        vBox = new VBox(grid);
 
         Scene scene = new Scene(vBox, windowWidth, windowHeight);
         String title = " Traffic Run! ";
         primaryStage.setTitle(title);
+
+        printAmountOfCoins(vBox);
+        printProgressBar();
 
         vBox.getChildren().add(nextStepButton(primaryStage));
 
@@ -58,6 +59,16 @@ public class App extends Application {
         engine.run();
 
     }
+    public void printAmountOfCoins(VBox vBox){
+        //wypisanie aktualnej liczby zdobytych przez gracza monet
+        Label amountOfCoins = new Label(" Amount of coins: ");
+        Label amountOfCoinsValue = new Label(Integer.toString(this.map.car.getSumOfCoins()));
+        hBox = new HBox(amountOfCoins, amountOfCoinsValue);
+        vBox.getChildren().add(hBox);
+    }
+    public void deletePrevAmountOfCoins(HBox hBox){
+        vBox.getChildren().remove(hBox);
+    }
     public Button nextStepButton(Stage primaryStage) {
         Button nextStepButton = new Button(" Next step! ");
         nextStepButton.setOnAction((action) -> {
@@ -66,10 +77,46 @@ public class App extends Application {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            this.map.car.move();
+            this.map.car.move(); //TODO uwzglednic zebranie napotkanych monet po drodze
+            refreshProgressBarPositive(progressBar);
+            moveWrongCars();
+            carsCollision(); //TODO uwzglednic czy wlasciwie jest obslugiwana sytuacja zderzen/przeniesienia autka gracza na start
             this.refresh();
         });
         return nextStepButton;
+    }
+    public void carsCollision(){
+        for (WrongCar value : this.map.wrongCarList) {
+            if(value.getCarPosition().equals(this.map.car.getCarPosition())){
+                this.map.car.setPosition(this.engine.getStartPosition()); //przenies gracza ponownie na poczatek (START)
+                this.map.car.setSumOfCoins(0); //gdy powrot na start spowodowany kolizja
+                refreshProgressBarNegative(progressBar);
+                break;
+            }
+        }
+    }
+    public void moveWrongCars(){
+        for(int i = 0; i < this.map.wrongCarList.size(); i++){
+            this.map.wrongCarList.get(i).moveWrongCar();
+        }
+    }
+    public void printProgressBar(){
+        progressBar = new ProgressBar();
+        progressBar.setPrefWidth(200);
+
+        HBox hBoxBar = new HBox(progressBar);
+        vBox.getChildren().add(hBoxBar);
+        hBoxBar.setPrefWidth(100);
+
+        // Set the initial value of the progress bar
+        progressBar.setProgress(0.0);
+
+    }
+    public void refreshProgressBarPositive(ProgressBar progressBar){
+        progressBar.setProgress((double)(this.map.car.getCarPosition().getY())/(double)(this.map.getMapHeight()-1));
+    }
+    public void refreshProgressBarNegative(ProgressBar progressBar){
+        progressBar.setProgress(0.0);
     }
     public void newGrid(){
 
@@ -109,7 +156,14 @@ public class App extends Application {
                     String path = "src/main/resources/autko.png";
                     box = new GuiElementBox(path, objectSize).getVBox();
                 }
-
+                else if(this.map.isOccupiedCoin(position)){
+                    String path = "src/main/resources/coin.png";
+                    box = new GuiElementBox(path, objectSize).getVBox();
+                }
+                else if(this.map.isOccupiedWrong(position)){
+                    String path = "src/main/resources/wrongCar.png";
+                    box = new GuiElementBox(path, objectSize).getVBox();
+                }
                 else{
                     box = new VBox();
                 }
@@ -126,10 +180,11 @@ public class App extends Application {
             this.grid.getColumnConstraints().clear();
             this.grid.getRowConstraints().clear();
             grid.setGridLinesVisible(false);
+            deletePrevAmountOfCoins(hBox);
+            printAmountOfCoins(vBox);
             this.newGrid();
         });
     }
-
 
 //    public static void main(String[] args) {
 //        launch(args);
