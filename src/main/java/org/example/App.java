@@ -30,7 +30,7 @@ public class App extends Application {
         this.map = new CarMap(new Vector2d(4, 0), CarType.T1);
         this.map.setMapHeight(5);
         this.map.setMapWidth(5);
-        this.engine = new SimulationEngine(new Vector2d(4, 0), 3, map, this);
+        this.engine = new SimulationEngine(new Vector2d(4, 0), map, this);
         this.windowScene = new Scene(grid, 400, 300);
         engine.setMoveDelay(timeSleep);
 
@@ -53,8 +53,8 @@ public class App extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        Thread thread = new Thread(engine);
-        thread.start();
+//        Thread thread = new Thread(engine); //watek spowodowalby ponowne uruchomienie metody run rownolegle!
+//        thread.start();
 
         engine.run();
 
@@ -65,6 +65,10 @@ public class App extends Application {
         Label amountOfCoinsValue = new Label(Integer.toString(this.map.car.getSumOfCoins()));
         hBox = new HBox(amountOfCoins, amountOfCoinsValue);
         vBox.getChildren().add(hBox);
+    }
+    public void nextLevel(){
+        NextLevelWindow window = new NextLevelWindow();
+        window.start(new Stage()); //zaczynamy grę od nowa //TODO sprawic azeby wchodzic na kolejne poziomy
     }
     public void deletePrevAmountOfCoins(HBox hBox){
         vBox.getChildren().remove(hBox);
@@ -82,6 +86,9 @@ public class App extends Application {
             moveWrongCars();
             carsCollision(); //TODO uwzglednic czy wlasciwie jest obslugiwana sytuacja zderzen/przeniesienia autka gracza na start
             this.refresh();
+            if(this.map.car.getCarPosition().getY() == this.map.getMapHeight()-1){
+                nextLevel();
+            }
         });
         return nextStepButton;
     }
@@ -164,9 +171,17 @@ public class App extends Application {
                     String path = "src/main/resources/wrongCar.png";
                     box = new GuiElementBox(path, objectSize).getVBox();
                 }
-                else{
-                    box = new VBox();
+                else if(this.map.isOccupiedAsphalt(position)){
+                    String path = "src/main/resources/asfalt.jpg";
+                    box = new GuiElementBox(path, objectSize).getVBox();
                 }
+                else {
+                    String path = "src/main/resources/pole.jpg";
+                    box = new GuiElementBox(path, objectSize).getVBox();
+                }
+//                else{
+//                    box = new VBox();
+//                }
 
                 grid.add(box, x+1, y+1);
                 GridPane.setHalignment(box, HPos.CENTER);

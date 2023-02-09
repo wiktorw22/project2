@@ -58,6 +58,11 @@ public class CarMap implements ICarMap{
         }
         return false;
     }
+    public boolean isOccupiedAsphalt(Vector2d position){
+        int carXPosition = this.car.getCarPosition().getX();
+        //int wrongCarsYPosition = this.wrongCarList.get(0).getCarPosition().getY();
+        return position.getX() == carXPosition;// || position.getY() == wrongCarsYPosition;
+    }
     public WrongCar objectAtWrong(Vector2d position) {
         for (WrongCar value : this.wrongCarList) {
             if (value.getCarPosition().equals(position)) {
