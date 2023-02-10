@@ -10,6 +10,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 public class StartWindow extends Application {
+    //protected int sumOfGamerCoins; //suma monet gracza na jego koncie w danej chwili rozgrywki
     public static void main(String[] args) {
         launch(args);
     }
@@ -49,7 +50,8 @@ public class StartWindow extends Application {
         });
     }
     private void startSimulation() {
-        App app = new App();
+        App app = new App(0);
+        app.setGamerAmountOfCoins(0);
         app.start(new Stage());
     }
 

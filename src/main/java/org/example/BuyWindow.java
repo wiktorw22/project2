@@ -13,31 +13,70 @@ import javafx.stage.Stage;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Random;
 
 public class BuyWindow extends Application {
     //    public static void main(String[] args) {
 //        launch(args);
 //    }
+    private App app;
+    private CarMap map;
+    private SimulationEngine engine;
+    private int costOfBuyingNewCar; //koszt zakupu kolejnego auta
+    public BuyWindow(App app){
+        this.app = app;
+        this.map = this.app.getCarMap();
+        this.engine = this.app.getSimulationEngine();
+    }
+    public int getCostOfBuyingNewCar(){
+        return this.costOfBuyingNewCar;
+    }
+    public void setCostOfBuyingNewCar(int costOfBuyingNewCar){
+        this.costOfBuyingNewCar = costOfBuyingNewCar;
+    }
     @Override
-    public void start(Stage primaryStage) throws FileNotFoundException {
+    public void start(Stage primaryStage) throws FileNotFoundException, InterruptedException {
 
         GridPane root = getGridPane();
 
-        Label label = new Label(" Now you can buy a new Car! ");
+        Label label = new Label(" You just bought a new Car! ");
         //Button startButton = new Button(" Start! "); //zmienic ustawienia przycisku na mozliwosc losowania nowego auta
 
 //        Image image = new Image(path);
 //        ImageView imageView = new ImageView(image);
-        String path = "src/main/resources/autko1.jpg";
+
+        Random random = new Random();
+        int randomNumber = random.nextInt(5); //wylosuj numer autka z listy possibleCarsToGet
+        String path;
+        if(randomNumber == 0){
+            path = "src/main/resources/autko.png";
+        }
+        else if(randomNumber == 1){
+            path = "src/main/resources/autko1.jpg";
+        }
+        else if(randomNumber == 2){
+            path = "src/main/resources/autko2.jpg";
+        }
+        else if(randomNumber == 3){
+            path = "src/main/resources/autko3.jpg";
+        }
+        else{
+            path = "src/main/resources/autko4.png";
+        }
+
         FileInputStream input = new FileInputStream(path);
         Image image = new Image(input);
         ImageView imageView = new ImageView(image);
         imageView.setFitWidth(200);
         imageView.setFitHeight(150);
 
+        //Button comeBackButton = new Button(" Come back to game! ");
+
         addElementsToRoot(root, label, imageView);
         root.setAlignment(Pos.CENTER);
         setScene(primaryStage, root);
+        Thread.sleep(600);
+        startSimulation(randomNumber);
         //setStartButton(startButton);
     }
     private static void setScene(Stage primaryStage, GridPane root) {
@@ -60,11 +99,15 @@ public class BuyWindow extends Application {
     }
     private void setStartButton(Button startButton){
         startButton.setOnAction(event -> {
-            startSimulation();
+            //startSimulation();
         });
     }
-    private void startSimulation() {
-        App app = new App(); //mozna jako argument podac numer poziomu do wyswietlenia
+    private void startSimulation(int randomNumber) {
+        //this.engine.setNewCar(randomNumber);
+        //this.map.car.setAmountOfCoins(int amount);
+        int actualGamerAmountOfCoins = this.app.getGamerAmountOfCoins();
+        App app = new App(randomNumber); //randomNumber to numer wylosowanego autka //mozna jako argument podac numer poziomu do wyswietlenia
+        app.setGamerAmountOfCoins(actualGamerAmountOfCoins - this.costOfBuyingNewCar);
         app.start(new Stage());
     }
 

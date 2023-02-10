@@ -18,6 +18,23 @@ public class SimulationEngine implements IEngine, Runnable {
         //this.numberOfWrongCars = numberOfWrongCars;
         this.app = app;
     }
+    public void setNewCar(int randomNumber){
+        if(randomNumber == 0){
+            this.map.car = new Car(this.getStartPosition(), CarType.T1, this.map);
+        }
+        else if(randomNumber == 1){
+            this.map.car = new Car(this.getStartPosition(), CarType.T2, this.map);
+        }
+        else if(randomNumber == 2){
+            this.map.car = new Car(this.getStartPosition(), CarType.T3, this.map);
+        }
+        else if(randomNumber == 3){
+            this.map.car = new Car(this.getStartPosition(), CarType.T4, this.map);
+        }
+        else{
+            this.map.car = new Car(this.getStartPosition(), CarType.T5, this.map);
+        }
+    }
     public Vector2d getStartPosition(){
         return this.startPosition;
     }
@@ -71,7 +88,7 @@ public class SimulationEngine implements IEngine, Runnable {
         addWrongCars(2); //umiesc autka przeszkadzajace
         //this.map.setActualWrongFirstPosition(this.wrongCarPosition);
         this.map.car.pickingTheCoins();
-        this.app.refresh();
+        this.app.refresh(this.app.getRandomNumber());
 
 
     }

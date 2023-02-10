@@ -13,6 +13,10 @@ public class NextLevelWindow extends Application {
 //    public static void main(String[] args) {
 //        launch(args);
 //    }
+    private App app;
+    public NextLevelWindow(App app){
+        this.app = app;
+    }
     @Override
     public void start(Stage primaryStage) {
 
@@ -49,7 +53,9 @@ public class NextLevelWindow extends Application {
         });
     }
     private void startSimulation() {
-        App app = new App(); //mozna jako argument podac numer poziomu do wyswietlenia
+        int amountOfPrevCoins = this.app.getGamerAmountOfCoins();
+        App app = new App(0); //mozna jako argument podac numer poziomu do wyswietlenia
+        app.setGamerAmountOfCoins(amountOfPrevCoins);
         app.start(new Stage());
     }
 

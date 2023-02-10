@@ -16,6 +16,9 @@ public class Car {
         this.sumOfCoins = 0;
         this.progress = new SimpleDoubleProperty(0.0);
     }
+    public void setAmountOfCoins(){
+
+    }
     public void setProgress(double newValue){
         this.progress.set(newValue);
     }
@@ -46,6 +49,7 @@ public class Car {
         for(int i = 0; i < this.map.coins.size(); i++){
             if(this.map.coins.get(i).getCoinPosition().equals(this.position)){
                 this.sumOfCoins = this.sumOfCoins + 1;
+                this.map.getApp().setGamerAmountOfCoins(this.map.getApp().getGamerAmountOfCoins()+1);
                 this.map.coins.remove(i);
                 break;
             }

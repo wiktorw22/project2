@@ -10,10 +10,14 @@ public class CarMap implements ICarMap{
     protected ArrayList<WrongCar> wrongCarList; //lista aut przeszkadzajacych
     protected ArrayList<Coin> coins; //lista monet na planszy
     protected Car car; //wlasciwe autko gracza
-    public CarMap(Vector2d position, CarType type){
+    protected ArrayList<Car> possibleCarsToGet;
+    private App app;
+    public CarMap(Vector2d position, App app){
         this.wrongCarList = new ArrayList<>();
         this.coins = new ArrayList<>();
-        this.car = new Car(position, type, this);
+        //this.car = new Car(position, type, this);
+        this.possibleCarsToGet = new ArrayList<>();
+        this.app = app;
     }
     public int getNumWrongCars(){
         return this.numWrongCars;
@@ -21,11 +25,35 @@ public class CarMap implements ICarMap{
 //    public Vector2d getActualWrongFirstPosition(){
 //        return this.actualWrongFirstPosition;
 //    }
+    public void makePossibleCars(){
+        for(int i = 0; i < 5; i++){
+            Car newCar;
+            if(i == 0){
+                newCar = new Car(this.car.getCarPosition(), CarType.T1, this);
+            }
+            else if(i == 1){
+                newCar = new Car(this.car.getCarPosition(), CarType.T2, this);
+            }
+            else if(i == 2){
+                newCar = new Car(this.car.getCarPosition(), CarType.T3, this);
+            }
+            else if(i == 3){
+                newCar = new Car(this.car.getCarPosition(), CarType.T4, this);
+            }
+            else{
+                newCar = new Car(this.car.getCarPosition(), CarType.T5, this);
+            }
+            this.possibleCarsToGet.add(newCar);
+        }
+    }
     public void setMapWidth(int mapWidth){
         this.mapWidth = mapWidth;
     }
     public void setMapHeight(int mapHeight){
         this.mapHeight = mapHeight;
+    }
+    public App getApp(){
+        return this.app;
     }
     public void setNumWrongAnimals(int numWrongAnimals){
         this.numWrongCars = numWrongAnimals;
