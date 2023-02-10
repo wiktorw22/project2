@@ -10,6 +10,8 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
+import java.io.FileNotFoundException;
+
 public class App extends Application {
     private int fieldSize = 30;
     private int windowHeight;
@@ -21,6 +23,7 @@ public class App extends Application {
     private VBox vBox;
     private HBox hBox;
     private ProgressBar progressBar;
+    private MovingWrongCars movingWrongCars;
     public App(){
         int width = 10;
         int height = 10;
@@ -31,6 +34,7 @@ public class App extends Application {
         this.map.setMapHeight(5);
         this.map.setMapWidth(5);
         this.engine = new SimulationEngine(new Vector2d(4, 0), map, this);
+        this.movingWrongCars = new MovingWrongCars(this.map);
         this.windowScene = new Scene(grid, 400, 300);
         engine.setMoveDelay(timeSleep);
 
@@ -49,12 +53,15 @@ public class App extends Application {
         printProgressBar();
 
         vBox.getChildren().add(nextStepButton(primaryStage));
+        vBox.getChildren().add(buyButton(primaryStage));
 
         primaryStage.setScene(scene);
         primaryStage.show();
 
 //        Thread thread = new Thread(engine); //watek spowodowalby ponowne uruchomienie metody run rownolegle!
 //        thread.start();
+
+        movingWrongCars.run();
 
         engine.run();
 
@@ -83,7 +90,12 @@ public class App extends Application {
             }
             this.map.car.move(); //TODO uwzglednic zebranie napotkanych monet po drodze
             refreshProgressBarPositive(progressBar);
-            moveWrongCars();
+            //moveWrongCars(); //TODO sprobowac zrobic w nowej klasie rownolegle
+            Thread thread = new Thread(movingWrongCars);
+            thread.start();
+//            Thread thread = new Thread(movingWrongCars);
+//            thread.start();
+//            movingWrongCars.run();
             carsCollision(); //TODO uwzglednic czy wlasciwie jest obslugiwana sytuacja zderzen/przeniesienia autka gracza na start
             this.refresh();
             if(this.map.car.getCarPosition().getY() == this.map.getMapHeight()-1){
@@ -91,6 +103,18 @@ public class App extends Application {
             }
         });
         return nextStepButton;
+    }
+    public Button buyButton(Stage primaryStage) {
+        Button buyButton = new Button(" Buy a new car HERE ");
+        buyButton.setOnAction((action) -> {
+            BuyWindow window = new BuyWindow();
+            try {
+                window.start(primaryStage);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return buyButton;
     }
     public void carsCollision(){
         for (WrongCar value : this.map.wrongCarList) {
@@ -102,9 +126,14 @@ public class App extends Application {
             }
         }
     }
-    public void moveWrongCars(){
-        for(int i = 0; i < this.map.wrongCarList.size(); i++){
-            this.map.wrongCarList.get(i).moveWrongCar();
+    public void moveWrongCars() {
+        int cnt = 0;
+        while(cnt < 10){
+            for(int i = 0; i < this.map.wrongCarList.size(); i++){
+                this.map.wrongCarList.get(i).moveWrongCar();
+            }
+            //this.refresh();
+            cnt++;
         }
     }
     public void printProgressBar(){

@@ -49,7 +49,7 @@ public class NextLevelWindow extends Application {
         });
     }
     private void startSimulation() {
-        App app = new App();
+        App app = new App(); //mozna jako argument podac numer poziomu do wyswietlenia
         app.start(new Stage());
     }
 
