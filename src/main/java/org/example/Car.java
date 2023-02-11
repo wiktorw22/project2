@@ -4,10 +4,10 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 
 public class Car {
+    private int sumOfCoins;
     private Vector2d position;
     private CarType type;
     private CarMap map;
-    private int sumOfCoins;
     private DoubleProperty progress;
     public Car(Vector2d position, CarType type, CarMap map){
         this.position = position;
@@ -16,26 +16,14 @@ public class Car {
         this.sumOfCoins = 0;
         this.progress = new SimpleDoubleProperty(0.0);
     }
-    public void setAmountOfCoins(){
-
+    public Vector2d getCarPosition(){
+        return this.position;
     }
     public void setProgress(double newValue){
         this.progress.set(newValue);
     }
-    public DoubleProperty getProgress(){
-        return this.progress;
-    }
     public void setPosition(Vector2d position){
         this.position = position;
-    }
-    public void setSumOfCoins(int extraSum){
-        this.sumOfCoins = this.sumOfCoins + extraSum;
-    }
-    public int getSumOfCoins(){
-        return this.sumOfCoins;
-    }
-    public Vector2d getCarPosition(){
-        return this.position;
     }
     public String toString(){
         return "C";

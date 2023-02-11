@@ -10,9 +10,6 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 public class NextLevelWindow extends Application {
-//    public static void main(String[] args) {
-//        launch(args);
-//    }
     private App app;
     public NextLevelWindow(App app){
         this.app = app;
@@ -61,13 +58,12 @@ public class NextLevelWindow extends Application {
         if(this.app != null){
             prevCarNumber = this.app.getPrevCarNumber();
         }
-        App app = new App(prevCarNumber); //mozna jako argument podac numer poziomu do wyswietlenia
+        App app = new App(prevCarNumber); //prevCarNumber, to numer typu autka z ktorym ten poziom zaczniemy
         app.setGamerAmountOfCoins(amountOfPrevCoins);
         app.setNumberOfLevel(prevLevel+1);
         app.getCarMap().setMapWidth(prevWidth+1);
         app.getCarMap().setMapHeight(prevHeight+1);
         app.start(new Stage());
     }
-
 }
 

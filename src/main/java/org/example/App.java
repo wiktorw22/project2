@@ -16,33 +16,30 @@ public class App extends Application {
     private int fieldSize = 35;
     private int windowHeight;
     private int windowWidth;
-    private CarMap map;
-    private SimulationEngine engine;
-    private GridPane grid = new GridPane();
-    private Scene windowScene;
-    private VBox vBox;
-    private HBox hBoxStartPos;
-    private HBox hBoxEndPos;
-    private HBox hBoxCoins;
-    private HBox hBoxLevel;
-    private ProgressBar progressBar;
-    private MovingWrongCars movingWrongCars;
     private int randomNumber;
     private int gamerAmountOfCoins;
     private int numberOfLevel;
     private int width;
     private int height;
-    public App(int randomNumber){ //numer wskazujacy typ naszego auta
+    private HBox hBoxStartPos;
+    private HBox hBoxEndPos;
+    private HBox hBoxCoins;
+    private HBox hBoxLevel;
+    private VBox vBox;
+    private ProgressBar progressBar;
+    private CarMap map;
+    private SimulationEngine engine;
+    private MovingWrongCars movingWrongCars;
+    private GridPane grid = new GridPane();
+    private Scene windowScene;
+    public App(int randomNumber){ //randomNumber, to numer wskazujacy typ naszego auta
 
         int timeSleep = 600;
         this.randomNumber = randomNumber;
-        this.map = new CarMap(new Vector2d(4, 0), this);
-        //this.map.setMapHeight(7);
-        //this.map.setMapWidth(7);
+        this.map = new CarMap(this);
         this.engine = new SimulationEngine(new Vector2d(4, 0), map, this);
         this.engine.setNewCar(randomNumber);
-        //zmodyfikuj liczbe monet na koncie gracza (w klasie StartWindow)
-        this.map.makePossibleCars(); //utworzy liste aut mozliwych do zdobycia w trakcie rozgrywki
+        this.map.makePossibleCars(); //metoda ta tworzy liste aut mozliwych do zdobycia w trakcie rozgrywki
         this.movingWrongCars = new MovingWrongCars(this.map);
         this.windowScene = new Scene(grid, 400, 300);
         engine.setMoveDelay(timeSleep);
@@ -51,8 +48,8 @@ public class App extends Application {
     public int getPrevCarNumber(){
         return this.randomNumber;
     }
-    public void setPrevCarNumber(int randomNumber){
-        this.randomNumber = randomNumber;
+    public int getRandomNumber(){
+        return this.randomNumber;
     }
     public CarMap getCarMap(){
         return this.map;
@@ -60,11 +57,17 @@ public class App extends Application {
     public SimulationEngine getSimulationEngine(){
         return this.engine;
     }
+    public int getNumberOfLevel(){
+        return this.numberOfLevel;
+    }
+    public int getGamerAmountOfCoins(){
+        return this.gamerAmountOfCoins;
+    }
     public void setNumberOfLevel(int level){
         this.numberOfLevel = level;
     }
-    public int getNumberOfLevel(){
-        return this.numberOfLevel;
+    public void setGamerAmountOfCoins(int amount){
+        this.gamerAmountOfCoins = amount;
     }
     @Override
     public void start(Stage primaryStage) {
@@ -86,7 +89,7 @@ public class App extends Application {
         printAmountOfCoins(vBox);
         printProgressBar();
 
-        vBox.getChildren().add(nextStepButton(primaryStage));
+        vBox.getChildren().add(nextStepButton());
         vBox.getChildren().add(buyButton(primaryStage));
 
         printStartField(vBox);
@@ -103,11 +106,18 @@ public class App extends Application {
         engine.run();
 
     }
-    public int getGamerAmountOfCoins(){
-        return this.gamerAmountOfCoins;
+    public void carsCollision(){
+        for (WrongCar value : this.map.wrongCarList) {
+            if(value.getCarPosition().equals(this.map.car.getCarPosition())){
+                this.map.car.setPosition(this.engine.getStartPosition()); //przenies gracza ponownie na poczatek (START)
+                refreshProgressBarNegative(progressBar); //zaczynamy pokonywac trase od poczatku
+                break;
+            }
+        }
     }
-    public void setGamerAmountOfCoins(int amount){
-        this.gamerAmountOfCoins = amount;
+    public void nextLevel(){
+        NextLevelWindow window = new NextLevelWindow(this);
+        window.start(new Stage()); //wyswietla okienko informujace o przejsciu gracza na kolejny poziom
     }
     public void printAmountOfCoins(VBox vBox){
         //wypisanie aktualnej liczby zdobytych przez gracza monet
@@ -137,85 +147,10 @@ public class App extends Application {
         hBoxEndPos = new HBox(finishField, finishFieldValue);
         vBox.getChildren().add(hBoxEndPos);
     }
-    public void nextLevel(){
-        NextLevelWindow window = new NextLevelWindow(this);
-        window.start(new Stage()); //zaczynamy grę od nowa //TODO sprawic azeby wchodzic na kolejne poziomy
-    }
-    public void deletePrevAmountOfCoins(){
+    public void deletePrevAmountOfCoins(){ //usuwa poprzednia liczbe monet gracza aby moc wyswietlic aktualna
         vBox.getChildren().remove(hBoxCoins);
     }
-    public void deletePrevStartField(){
-        vBox.getChildren().remove(hBoxStartPos);
-    }
-    public void deletePrevFinishField(){
-        vBox.getChildren().remove(hBoxEndPos);
-    }
-    public void deletePrevLevelNumber(){
-        vBox.getChildren().remove(hBoxLevel);
-    }
-    public Button nextStepButton(Stage primaryStage) {
-        Button nextStepButton = new Button(" Next step! ");
-        nextStepButton.setOnAction((action) -> {
-            try {
-                Thread.sleep(600); //timeSleep
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            this.map.car.move(); //TODO uwzglednic zebranie napotkanych monet po drodze
-            refreshProgressBarPositive(progressBar);
-            //moveWrongCars(); //TODO sprobowac zrobic w nowej klasie rownolegle
-            Thread thread = new Thread(movingWrongCars);
-            thread.start();
-//            Thread thread = new Thread(movingWrongCars);
-//            thread.start();
-//            movingWrongCars.run();
-            carsCollision(); //TODO uwzglednic czy wlasciwie jest obslugiwana sytuacja zderzen/przeniesienia autka gracza na start
-            this.refresh(this.getRandomNumber());
-            if(this.map.car.getCarPosition().getY() == this.map.getMapHeight()-1){
-                nextLevel();
-            }
-        });
-        return nextStepButton;
-    }
-    public Button buyButton(Stage primaryStage) {
-        Button buyButton = new Button(" Buy a new car ");
-        //przycisk powinien byc aktywny jesli zaczynamy gre na danym poziomie i mamy wystarczajaco duzo monet zebranych (np 0 na potrzeby testow)
-        BuyWindow window = new BuyWindow(this);
-        window.setCostOfBuyingNewCar(5); //koszt zakupu nowego auta
-        if(this.getGamerAmountOfCoins() >= window.getCostOfBuyingNewCar() && this.map.car.getCarPosition().equals(this.engine.getStartPosition())) {
-            buyButton.setOnAction((action) -> {
-                try {
-                    window.start(primaryStage);
-                } catch (FileNotFoundException e) {
-                    throw new RuntimeException(e);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        }
-        return buyButton;
-    }
-    public void carsCollision(){
-        for (WrongCar value : this.map.wrongCarList) {
-            if(value.getCarPosition().equals(this.map.car.getCarPosition())){
-                this.map.car.setPosition(this.engine.getStartPosition()); //przenies gracza ponownie na poczatek (START)
-                this.map.car.setSumOfCoins(0); //gdy powrot na start spowodowany kolizja
-                refreshProgressBarNegative(progressBar);
-                break;
-            }
-        }
-    }
-    public void moveWrongCars() {
-        int cnt = 0;
-        while(cnt < 10){
-            for(int i = 0; i < this.map.wrongCarList.size(); i++){
-                this.map.wrongCarList.get(i).moveWrongCar();
-            }
-            //this.refresh();
-            cnt++;
-        }
-    }
-    public void printProgressBar(){
+    public void printProgressBar(){ //wyswietli pasek zapelniajacy sie wraz z pokonywaniem trasy przez auto
         progressBar = new ProgressBar();
         progressBar.setPrefWidth(200);
 
@@ -225,13 +160,48 @@ public class App extends Application {
 
         // Set the initial value of the progress bar
         progressBar.setProgress(0.0);
-
     }
     public void refreshProgressBarPositive(ProgressBar progressBar){
         progressBar.setProgress((double)(this.map.car.getCarPosition().getY())/(double)(this.map.getMapHeight()-1));
     }
     public void refreshProgressBarNegative(ProgressBar progressBar){
         progressBar.setProgress(0.0);
+    }
+    public Button nextStepButton() { //wykonuje kolejny ruch samochodzika
+        Button nextStepButton = new Button(" Next step! ");
+        nextStepButton.setOnAction((action) -> {
+            try {
+                Thread.sleep(600); //timeSleep
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            this.map.car.move();
+            refreshProgressBarPositive(progressBar);
+            Thread thread = new Thread(movingWrongCars);
+            thread.start();
+            carsCollision(); //obsluguje sytuacje zderzen aut na mapie
+            this.refresh(this.getRandomNumber());
+            if(this.map.car.getCarPosition().getY() == this.map.getMapHeight()-1){
+                nextLevel();
+            }
+        });
+        return nextStepButton;
+    }
+    public Button buyButton(Stage primaryStage) {
+        Button buyButton = new Button(" Buy a new car ");
+        //przycisk powinien byc aktywny jesli zaczynamy gre na danym poziomie i mamy wystarczajaco duzo monet zebranych
+        BuyWindow window = new BuyWindow(this);
+        window.setCostOfBuyingNewCar(5); //koszt zakupu nowego auta
+        if(this.getGamerAmountOfCoins() >= window.getCostOfBuyingNewCar() && this.map.car.getCarPosition().equals(this.engine.getStartPosition())) {
+            buyButton.setOnAction((action) -> {
+                try {
+                    window.start(primaryStage);
+                } catch (FileNotFoundException | InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
+        return buyButton;
     }
     public void newGrid(int randomNumber){
 
@@ -248,22 +218,22 @@ public class App extends Application {
         GridPane.setHalignment(startLabel, HPos.CENTER);
         grid.add(startLabel, 0, 0);
 
-        for (int i = 1; i <= this.map.getMapWidth(); i++){ //4, to mapWidth-1
+        for (int i = 1; i <= this.map.getMapWidth(); i++){
             Label label = new Label(Integer.toString(i -1));
             grid.getColumnConstraints().add(new ColumnConstraints(width));
             grid.add(label, i, 0);
             GridPane.setHalignment(label, HPos.CENTER);
         }
 
-        for (int i = 1 ; i <= this.map.getMapHeight(); i++){ //4, to mapHeight-1
+        for (int i = 1 ; i <= this.map.getMapHeight(); i++){
             Label label = new Label(Integer.toString(i - 1));
             grid.getRowConstraints().add(new RowConstraints(height));
             grid.add(label, 0,i);
             GridPane.setHalignment(label, HPos.CENTER);
         }
 
-        for (int x = 0; x < this.map.getMapWidth(); x++){ //5, to mapWidth
-            for (int y = 0; y < this.map.getMapHeight(); y++){ //5, to mapHeight
+        for (int x = 0; x < this.map.getMapWidth(); x++){
+            for (int y = 0; y < this.map.getMapHeight(); y++){
                 Vector2d position = new Vector2d(x, y);
 
                 VBox box;
@@ -302,9 +272,6 @@ public class App extends Application {
                     String path = "src/main/resources/pole.jpg";
                     box = new GuiElementBox(path, objectSize).getVBox();
                 }
-//                else{
-//                    box = new VBox();
-//                }
 
                 grid.add(box, x+1, y+1);
                 GridPane.setHalignment(box, HPos.CENTER);
@@ -312,10 +279,7 @@ public class App extends Application {
         }
 
     }
-    public int getRandomNumber(){
-        return this.randomNumber;
-    }
-    public void refresh(int randomNumber) {
+    public void refresh(int randomNumber) { //odswieza aktualny stan mapy (jej widok dla uzytkownika)
         Platform.runLater( () -> {
             this.grid.getChildren().clear();
             this.grid.getColumnConstraints().clear();
@@ -326,8 +290,4 @@ public class App extends Application {
             this.newGrid(randomNumber);
         });
     }
-
-//    public static void main(String[] args) {
-//        launch(args);
-//    }
 }

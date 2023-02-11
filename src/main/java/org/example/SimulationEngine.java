@@ -3,20 +3,26 @@ package org.example;
 import java.util.Random;
 
 public class SimulationEngine implements IEngine, Runnable {
+    private int wrongCarPositionY;
+    private int moveDelay;
     private Vector2d startPosition;
     private Vector2d endPosition;
     protected CarMap map;
-    //private int numberOfWrongCars;
-    private int wrongCarPositionY;
-    private int moveDelay;
     private App app;
-
     public SimulationEngine(Vector2d startPosition, CarMap map, App app){
         this.startPosition = startPosition;
         this.map = map;
         this.endPosition = new Vector2d(startPosition.getX(), this.map.getMapHeight()-1);
-        //this.numberOfWrongCars = numberOfWrongCars;
         this.app = app;
+    }
+    public Vector2d getStartPosition(){
+        return this.startPosition;
+    }
+    public void setWrongCarPositionY(int positionY){
+        this.wrongCarPositionY = positionY;
+    }
+    public void setMoveDelay(int delay){
+        this.moveDelay = delay;
     }
     public void setNewCar(int randomNumber){
         if(randomNumber == 0){
@@ -35,18 +41,6 @@ public class SimulationEngine implements IEngine, Runnable {
             this.map.car = new Car(this.getStartPosition(), CarType.T5, this.map);
         }
     }
-    public Vector2d getStartPosition(){
-        return this.startPosition;
-    }
-    public void setWrongCarPositionY(int positionY){
-        this.wrongCarPositionY = positionY;
-    }
-    public int getWrongCarPositionY(){
-        return this.wrongCarPositionY;
-    }
-    public void setMoveDelay(int delay){
-        this.moveDelay = delay;
-    }
     public void addCoins(int amountOfCoins){
         int randomX = this.map.car.getCarPosition().getX();
         for(int i = 0; i < amountOfCoins; i++){
@@ -54,8 +48,6 @@ public class SimulationEngine implements IEngine, Runnable {
             int randomY = random.nextInt(this.map.getMapHeight());
             Vector2d newPosition = new Vector2d(randomX, randomY);
             Coin coin = new Coin(newPosition);
-            //System.out.println("COIN: ");
-            //System.out.println(coin.getCoinPosition());
             this.map.coins.add(coin);
         }
     }
@@ -71,13 +63,11 @@ public class SimulationEngine implements IEngine, Runnable {
                 Vector2d newPosition = new Vector2d(randomX, randomY);
                 WrongCar wrongCar = new WrongCar(newPosition, CarType.T2, this.map, this);
                 this.map.wrongCarList.add(wrongCar);
-                //System.out.println(wrongCar.getCarPosition());
             }
             cnt++;
-            //System.out.println(randomY);
         }
     }
-    //addWrongCars inne dla kazdego kolejnego poziomu!
+    //addWrongCars jest inne dla kazdego kolejnego poziomu!
     public void removeCoins(){
         this.map.coins.clear();
     }
@@ -89,13 +79,10 @@ public class SimulationEngine implements IEngine, Runnable {
 
         removeCoins();
         removeWrongCars();
-        addCoins(2); //umiesc monety na mapie
-        //System.out.println(this.map.coins.size());
-        addWrongCars(2, this.app.getNumberOfLevel()); //umiesc autka przeszkadzajace
-        //this.map.setActualWrongFirstPosition(this.wrongCarPosition);
+        addCoins(2); //umiesc monety na mapie w liczbie dwoch (na przyklad)
+        addWrongCars(2, this.app.getNumberOfLevel()); //umiesc autka przeszkadzajace w liczbie dwoch (na przyklad)
         this.map.car.pickingTheCoins();
         this.app.refresh(this.app.getRandomNumber());
-
 
     }
 }

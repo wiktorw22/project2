@@ -11,7 +11,6 @@ import java.io.FileNotFoundException;
 public class GuiElementBox {
     private ImageView image;
     private VBox vBox;
-
     public GuiElementBox(String path, int size){
         try {
             Image image = new Image(new FileInputStream(path));
@@ -27,7 +26,6 @@ public class GuiElementBox {
             throw new RuntimeException(" File not found! ");
         }
     }
-
     public VBox getVBox(){
         return this.vBox;
     }

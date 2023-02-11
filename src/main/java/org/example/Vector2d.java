@@ -12,28 +12,12 @@ public class Vector2d {
     public int getX(){
         return this.x;
     }
-    public int getY(){
-        return this.y;
-    }
-    public void setX(int newX){
-        this.x = newX;
-    }
-    public void setY(int newY){
-        this.y = newY;
-    }
+    public int getY(){ return this.y; }
     public Vector2d add(Vector2d other){
         return new Vector2d(this.x +  other.x, this.y + other.y);
     }
     public String toString(){
         return "(" + x + ", " + y + ")";
-    }
-    public Vector2d max(Vector2d other){ //porownanie wektorow o tych samych wspolrzednych y a innych x
-        if(this.getX() < other.getX()){
-            return other;
-        }
-        else{
-            return this;
-        }
     }
     @Override
     public boolean equals(Object other) {

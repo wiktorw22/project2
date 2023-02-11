@@ -10,7 +10,6 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 public class StartWindow extends Application {
-    //protected int sumOfGamerCoins; //suma monet gracza na jego koncie w danej chwili rozgrywki
     public static void main(String[] args) {
         launch(args);
     }
@@ -57,5 +56,4 @@ public class StartWindow extends Application {
         app.getCarMap().setMapHeight(7);
         app.start(new Stage());
     }
-
 }

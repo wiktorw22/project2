@@ -16,13 +16,10 @@ import java.io.FileNotFoundException;
 import java.util.Random;
 
 public class BuyWindow extends Application {
-    //    public static void main(String[] args) {
-//        launch(args);
-//    }
+    private int costOfBuyingNewCar; //koszt zakupu kolejnego auta
     private App app;
     private CarMap map;
     private SimulationEngine engine;
-    private int costOfBuyingNewCar; //koszt zakupu kolejnego auta
     public BuyWindow(App app){
         this.app = app;
         this.map = this.app.getCarMap();
@@ -36,14 +33,8 @@ public class BuyWindow extends Application {
     }
     @Override
     public void start(Stage primaryStage) throws FileNotFoundException, InterruptedException {
-
         GridPane root = getGridPane();
-
         Label label = new Label(" You just bought a new Car! ");
-        //Button startButton = new Button(" Start! "); //zmienic ustawienia przycisku na mozliwosc losowania nowego auta
-
-//        Image image = new Image(path);
-//        ImageView imageView = new ImageView(image);
 
         Random random = new Random();
         int randomNumber = random.nextInt(5); //wylosuj numer autka z listy possibleCarsToGet
@@ -70,14 +61,11 @@ public class BuyWindow extends Application {
         imageView.setFitWidth(200);
         imageView.setFitHeight(150);
 
-        //Button comeBackButton = new Button(" Come back to game! ");
-
         addElementsToRoot(root, label, imageView);
         root.setAlignment(Pos.CENTER);
         setScene(primaryStage, root);
         Thread.sleep(600);
         startSimulation(randomNumber);
-        //setStartButton(startButton);
     }
     private static void setScene(Stage primaryStage, GridPane root) {
         Scene scene = new Scene(root, 400, 520);
@@ -88,7 +76,6 @@ public class BuyWindow extends Application {
     private static void addElementsToRoot(GridPane root, Label label, ImageView imageView){
         root.add(label, 0, 0);
         root.add(imageView, 0, 1);
-        //root.add(startButton, 0, 1);
     }
     private static GridPane getGridPane() {
         GridPane root = new GridPane();
@@ -97,26 +84,18 @@ public class BuyWindow extends Application {
         root.setHgap(10);
         return root;
     }
-    private void setStartButton(Button startButton){
-        startButton.setOnAction(event -> {
-            //startSimulation();
-        });
-    }
     private void startSimulation(int randomNumber) {
-        //this.engine.setNewCar(randomNumber);
-        //this.map.car.setAmountOfCoins(int amount);
         int actualGamerAmountOfCoins = this.app.getGamerAmountOfCoins();
         int prevLevel = this.app.getNumberOfLevel();
         int prevWidth = this.app.getCarMap().getMapWidth();
         int prevHeight = this.app.getCarMap().getMapHeight();
-        App app = new App(randomNumber); //randomNumber to numer wylosowanego autka //mozna jako argument podac numer poziomu do wyswietlenia
+        App app = new App(randomNumber); //randomNumber to numer wylosowanego autka
         app.setGamerAmountOfCoins(actualGamerAmountOfCoins - this.costOfBuyingNewCar);
         app.setNumberOfLevel(prevLevel);
         app.getCarMap().setMapWidth(prevWidth);
         app.getCarMap().setMapHeight(prevHeight);
         app.start(new Stage());
     }
-
 }
 
 

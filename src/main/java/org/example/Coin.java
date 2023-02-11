@@ -1,5 +1,4 @@
 package org.example;
-
 public class Coin {
     private int value; //wartosc kazdej z monet na trasie
     private Vector2d position;
