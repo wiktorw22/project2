@@ -89,10 +89,17 @@ public class CarMap implements ICarMap{
     public boolean isOccupiedAsphalt(Vector2d position){
         int carXPosition = this.car.getCarPosition().getX();
         int wrongCarsYPosition = (int)Double.POSITIVE_INFINITY;
-        if(this.wrongCarList.size() != 0){
-            wrongCarsYPosition = this.wrongCarList.get(0).getCarPosition().getY();
+        //ArrayList<Integer> pomYPositions = new ArrayList<>();
+        boolean tmp = false;
+        for (WrongCar wrongCar : this.wrongCarList) {
+            //pomYPositions.add(this.wrongCarList.get(i).getCarPosition().getY());
+            if (wrongCar.getCarPosition().getY() == position.getY()) {
+                tmp = true;
+                break;
+            }
+            //wrongCarsYPosition = this.wrongCarList.get(0).getCarPosition().getY();
         }
-        return position.getX() == carXPosition || position.getY() == wrongCarsYPosition;
+        return position.getX() == carXPosition || tmp;
     }
     public WrongCar objectAtWrong(Vector2d position) {
         for (WrongCar value : this.wrongCarList) {

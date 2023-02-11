@@ -106,8 +106,10 @@ public class BuyWindow extends Application {
         //this.engine.setNewCar(randomNumber);
         //this.map.car.setAmountOfCoins(int amount);
         int actualGamerAmountOfCoins = this.app.getGamerAmountOfCoins();
+        int prevLevel = this.app.getNumberOfLevel();
         App app = new App(randomNumber); //randomNumber to numer wylosowanego autka //mozna jako argument podac numer poziomu do wyswietlenia
         app.setGamerAmountOfCoins(actualGamerAmountOfCoins - this.costOfBuyingNewCar);
+        app.setNumberOfLevel(prevLevel);
         app.start(new Stage());
     }
 

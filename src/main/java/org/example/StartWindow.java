@@ -52,6 +52,7 @@ public class StartWindow extends Application {
     private void startSimulation() {
         App app = new App(0);
         app.setGamerAmountOfCoins(0);
+        app.setNumberOfLevel(1);
         app.start(new Stage());
     }
 

@@ -22,6 +22,6 @@ public class WrongCar {
     public void moveWrongCar(){
         Random random = new Random();
         int step = random.nextInt(this.map.getMapWidth());
-        this.position = new Vector2d(step, this.engine.getWrongCarPositionY());
+        this.position = new Vector2d(step, this.getCarPosition().getY());
     }
 }

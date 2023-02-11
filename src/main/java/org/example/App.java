@@ -26,6 +26,7 @@ public class App extends Application {
     private MovingWrongCars movingWrongCars;
     private int randomNumber;
     private int gamerAmountOfCoins;
+    private int numberOfLevel;
     public App(int randomNumber){ //numer wskazujacy typ naszego auta
         int width = 10;
         int height = 10;
@@ -50,6 +51,12 @@ public class App extends Application {
     }
     public SimulationEngine getSimulationEngine(){
         return this.engine;
+    }
+    public void setNumberOfLevel(int level){
+        this.numberOfLevel = level;
+    }
+    public int getNumberOfLevel(){
+        return this.numberOfLevel;
     }
     @Override
     public void start(Stage primaryStage) {

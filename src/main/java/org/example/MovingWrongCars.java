@@ -8,7 +8,7 @@ public class MovingWrongCars implements Runnable {
     @Override
     public void run() {
         int cnt = 0;
-        while(cnt < 100){
+        while(cnt < 5){
             for(int i = 0; i < this.map.wrongCarList.size(); i++){
                 this.map.wrongCarList.get(i).moveWrongCar();
             }

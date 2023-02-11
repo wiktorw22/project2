@@ -54,8 +54,10 @@ public class NextLevelWindow extends Application {
     }
     private void startSimulation() {
         int amountOfPrevCoins = this.app.getGamerAmountOfCoins();
+        int prevLevel = this.app.getNumberOfLevel();
         App app = new App(0); //mozna jako argument podac numer poziomu do wyswietlenia
         app.setGamerAmountOfCoins(amountOfPrevCoins);
+        app.setNumberOfLevel(prevLevel+1);
         app.start(new Stage());
     }
 
