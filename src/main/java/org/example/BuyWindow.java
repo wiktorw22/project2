@@ -16,7 +16,7 @@ import java.io.FileNotFoundException;
 import java.util.Random;
 
 public class BuyWindow extends Application {
-    private int costOfBuyingNewCar; //koszt zakupu kolejnego auta
+    private int costOfBuyingNewCar = 5; //koszt zakupu kolejnego auta
     private App app;
     private CarMap map;
     private SimulationEngine engine;

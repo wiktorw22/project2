@@ -191,7 +191,7 @@ public class App extends Application {
         Button buyButton = new Button(" Buy a new car ");
         //przycisk powinien byc aktywny jesli zaczynamy gre na danym poziomie i mamy wystarczajaco duzo monet zebranych
         BuyWindow window = new BuyWindow(this);
-        window.setCostOfBuyingNewCar(5); //koszt zakupu nowego auta
+        window.setCostOfBuyingNewCar(window.getCostOfBuyingNewCar()+1); //koszt zakupu nowego auta
         if(this.getGamerAmountOfCoins() >= window.getCostOfBuyingNewCar() && this.map.car.getCarPosition().equals(this.engine.getStartPosition())) {
             buyButton.setOnAction((action) -> {
                 try {
