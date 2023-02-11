@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 import java.io.FileNotFoundException;
 
 public class App extends Application {
-    private int fieldSize = 30;
+    private int fieldSize = 35;
     private int windowHeight;
     private int windowWidth;
     private CarMap map;
@@ -21,22 +21,24 @@ public class App extends Application {
     private GridPane grid = new GridPane();
     private Scene windowScene;
     private VBox vBox;
-    private HBox hBox;
+    private HBox hBoxStartPos;
+    private HBox hBoxEndPos;
+    private HBox hBoxCoins;
+    private HBox hBoxLevel;
     private ProgressBar progressBar;
     private MovingWrongCars movingWrongCars;
     private int randomNumber;
     private int gamerAmountOfCoins;
     private int numberOfLevel;
+    private int width;
+    private int height;
     public App(int randomNumber){ //numer wskazujacy typ naszego auta
-        int width = 10;
-        int height = 10;
+
         int timeSleep = 600;
-        windowHeight = fieldSize * (height+2);
-        windowWidth = fieldSize * (width+2);
         this.randomNumber = randomNumber;
         this.map = new CarMap(new Vector2d(4, 0), this);
-        this.map.setMapHeight(10);
-        this.map.setMapWidth(10);
+        //this.map.setMapHeight(7);
+        //this.map.setMapWidth(7);
         this.engine = new SimulationEngine(new Vector2d(4, 0), map, this);
         this.engine.setNewCar(randomNumber);
         //zmodyfikuj liczbe monet na koncie gracza (w klasie StartWindow)
@@ -45,6 +47,12 @@ public class App extends Application {
         this.windowScene = new Scene(grid, 400, 300);
         engine.setMoveDelay(timeSleep);
 
+    }
+    public int getPrevCarNumber(){
+        return this.randomNumber;
+    }
+    public void setPrevCarNumber(int randomNumber){
+        this.randomNumber = randomNumber;
     }
     public CarMap getCarMap(){
         return this.map;
@@ -61,6 +69,12 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
 
+        height = this.getCarMap().getMapHeight();
+        width = this.getCarMap().getMapWidth();
+
+        windowHeight = fieldSize * (height+5);
+        windowWidth = fieldSize * (width+5);
+
         newGrid(this.getRandomNumber());
         vBox = new VBox(grid);
 
@@ -68,11 +82,15 @@ public class App extends Application {
         String title = " Traffic Run! ";
         primaryStage.setTitle(title);
 
+        printNumberOfLevel(vBox);
         printAmountOfCoins(vBox);
         printProgressBar();
 
         vBox.getChildren().add(nextStepButton(primaryStage));
         vBox.getChildren().add(buyButton(primaryStage));
+
+        printStartField(vBox);
+        printEndField(vBox);
 
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -93,17 +111,47 @@ public class App extends Application {
     }
     public void printAmountOfCoins(VBox vBox){
         //wypisanie aktualnej liczby zdobytych przez gracza monet
-        Label amountOfCoins = new Label(" Amount of coins: ");
+        Label amountOfCoins = new Label(" Coins: ");
         Label amountOfCoinsValue = new Label(Integer.toString(this.getGamerAmountOfCoins()));
-        hBox = new HBox(amountOfCoins, amountOfCoinsValue);
-        vBox.getChildren().add(hBox);
+        hBoxCoins = new HBox(amountOfCoins, amountOfCoinsValue);
+        vBox.getChildren().add(hBoxCoins);
+    }
+    public void printNumberOfLevel(VBox vBox){
+        //wypisanie aktualnego numeru poziomu
+        Label numberOfLevel = new Label(" Level: ");
+        Label numberOfLevelValue = new Label(Integer.toString(this.getNumberOfLevel()));
+        hBoxLevel = new HBox(numberOfLevel, numberOfLevelValue);
+        vBox.getChildren().add(hBoxLevel);
+    }
+    public void printStartField(VBox vBox){
+        //wypisanie pola startu
+        Label startField = new Label(" Start: ");
+        Label startFieldValue = new Label(this.getSimulationEngine().getStartPosition().toString());
+        hBoxStartPos = new HBox(startField, startFieldValue);
+        vBox.getChildren().add(hBoxStartPos);
+    }
+    public void printEndField(VBox vBox){
+        //wypisanie pola mety
+        Label finishField = new Label(" Finish: ");
+        Label finishFieldValue = new Label(new Vector2d(this.getSimulationEngine().getStartPosition().getX(), this.map.getMapHeight()-1).toString());
+        hBoxEndPos = new HBox(finishField, finishFieldValue);
+        vBox.getChildren().add(hBoxEndPos);
     }
     public void nextLevel(){
         NextLevelWindow window = new NextLevelWindow(this);
         window.start(new Stage()); //zaczynamy grę od nowa //TODO sprawic azeby wchodzic na kolejne poziomy
     }
-    public void deletePrevAmountOfCoins(HBox hBox){
-        vBox.getChildren().remove(hBox);
+    public void deletePrevAmountOfCoins(){
+        vBox.getChildren().remove(hBoxCoins);
+    }
+    public void deletePrevStartField(){
+        vBox.getChildren().remove(hBoxStartPos);
+    }
+    public void deletePrevFinishField(){
+        vBox.getChildren().remove(hBoxEndPos);
+    }
+    public void deletePrevLevelNumber(){
+        vBox.getChildren().remove(hBoxLevel);
     }
     public Button nextStepButton(Stage primaryStage) {
         Button nextStepButton = new Button(" Next step! ");
@@ -130,7 +178,7 @@ public class App extends Application {
         return nextStepButton;
     }
     public Button buyButton(Stage primaryStage) {
-        Button buyButton = new Button(" Buy a new car HERE ");
+        Button buyButton = new Button(" Buy a new car ");
         //przycisk powinien byc aktywny jesli zaczynamy gre na danym poziomie i mamy wystarczajaco duzo monet zebranych (np 0 na potrzeby testow)
         BuyWindow window = new BuyWindow(this);
         window.setCostOfBuyingNewCar(5); //koszt zakupu nowego auta
@@ -273,7 +321,7 @@ public class App extends Application {
             this.grid.getColumnConstraints().clear();
             this.grid.getRowConstraints().clear();
             grid.setGridLinesVisible(false);
-            deletePrevAmountOfCoins(hBox);
+            deletePrevAmountOfCoins();
             printAmountOfCoins(vBox);
             this.newGrid(randomNumber);
         });

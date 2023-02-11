@@ -55,9 +55,17 @@ public class NextLevelWindow extends Application {
     private void startSimulation() {
         int amountOfPrevCoins = this.app.getGamerAmountOfCoins();
         int prevLevel = this.app.getNumberOfLevel();
-        App app = new App(0); //mozna jako argument podac numer poziomu do wyswietlenia
+        int prevWidth = this.app.getCarMap().getMapWidth();
+        int prevHeight = this.app.getCarMap().getMapHeight();
+        int prevCarNumber = 0;
+        if(this.app != null){
+            prevCarNumber = this.app.getPrevCarNumber();
+        }
+        App app = new App(prevCarNumber); //mozna jako argument podac numer poziomu do wyswietlenia
         app.setGamerAmountOfCoins(amountOfPrevCoins);
         app.setNumberOfLevel(prevLevel+1);
+        app.getCarMap().setMapWidth(prevWidth+1);
+        app.getCarMap().setMapHeight(prevHeight+1);
         app.start(new Stage());
     }
 

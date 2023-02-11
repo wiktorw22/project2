@@ -53,6 +53,8 @@ public class StartWindow extends Application {
         App app = new App(0);
         app.setGamerAmountOfCoins(0);
         app.setNumberOfLevel(1);
+        app.getCarMap().setMapWidth(7);
+        app.getCarMap().setMapHeight(7);
         app.start(new Stage());
     }
 
