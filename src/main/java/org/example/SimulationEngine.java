@@ -3,7 +3,6 @@ package org.example;
 import java.util.Random;
 
 public class SimulationEngine implements IEngine, Runnable {
-    private int wrongCarPositionY;
     private int moveDelay;
     private Vector2d startPosition;
     private Vector2d endPosition;
@@ -17,9 +16,6 @@ public class SimulationEngine implements IEngine, Runnable {
     }
     public Vector2d getStartPosition(){
         return this.startPosition;
-    }
-    public void setWrongCarPositionY(int positionY){
-        this.wrongCarPositionY = positionY;
     }
     public void setMoveDelay(int delay){
         this.moveDelay = delay;
@@ -56,7 +52,6 @@ public class SimulationEngine implements IEngine, Runnable {
         while(cnt < numberOfLevel){
             Random randomly = new Random();
             int randomY = randomly.nextInt(this.map.getMapHeight());
-            this.setWrongCarPositionY(randomY);
             for(int i = 0; i < amountOfWrongCars; i++){
                 Random randoms = new Random();
                 int randomX = randoms.nextInt(this.map.getMapWidth());
@@ -80,7 +75,7 @@ public class SimulationEngine implements IEngine, Runnable {
         removeCoins();
         removeWrongCars();
         addCoins(2); //umiesc monety na mapie w liczbie dwoch (na przyklad)
-        addWrongCars(2, this.app.getNumberOfLevel()); //umiesc autka przeszkadzajace w liczbie dwoch (na przyklad)
+        addWrongCars(1, this.app.getNumberOfLevel()); //umiesc autka przeszkadzajace w liczbie dwoch (na przyklad)
         this.map.car.pickingTheCoins();
         this.app.refresh(this.app.getRandomNumber());
 

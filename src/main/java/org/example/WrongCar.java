@@ -16,12 +16,10 @@ public class WrongCar {
     public Vector2d getCarPosition(){
         return this.position;
     }
+    public void setPosition(Vector2d vector2d) {
+        this.position = vector2d;
+    }
     public String toString(){
         return "W";
-    }
-    public void moveWrongCar(){
-        Random random = new Random();
-        int step = random.nextInt(this.map.getMapWidth());
-        this.position = new Vector2d(step, this.getCarPosition().getY());
     }
 }

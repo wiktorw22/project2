@@ -84,7 +84,7 @@ public class BuyWindow extends Application {
         root.setHgap(10);
         return root;
     }
-    private void startSimulation(int randomNumber) {
+    private void startSimulation(int randomNumber) throws FileNotFoundException {
         int actualGamerAmountOfCoins = this.app.getGamerAmountOfCoins();
         int prevLevel = this.app.getNumberOfLevel();
         int prevWidth = this.app.getCarMap().getMapWidth();

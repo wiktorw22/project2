@@ -9,6 +9,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
+import java.io.FileNotFoundException;
+
 public class NextLevelWindow extends Application {
     private App app;
     public NextLevelWindow(App app){
@@ -46,10 +48,14 @@ public class NextLevelWindow extends Application {
     }
     private void setStartButton(Button startButton){
         startButton.setOnAction(event -> {
-            startSimulation();
+            try {
+                startSimulation();
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
-    private void startSimulation() {
+    private void startSimulation() throws FileNotFoundException {
         int amountOfPrevCoins = this.app.getGamerAmountOfCoins();
         int prevLevel = this.app.getNumberOfLevel();
         int prevWidth = this.app.getCarMap().getMapWidth();

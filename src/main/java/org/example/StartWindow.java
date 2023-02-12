@@ -9,6 +9,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
+import java.io.FileNotFoundException;
+
 public class StartWindow extends Application {
     public static void main(String[] args) {
         launch(args);
@@ -45,10 +47,14 @@ public class StartWindow extends Application {
     }
     private void setStartButton(Button startButton){
         startButton.setOnAction(event -> {
-            startSimulation();
+            try {
+                startSimulation();
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
-    private void startSimulation() {
+    private void startSimulation() throws FileNotFoundException {
         App app = new App(0);
         app.setGamerAmountOfCoins(0);
         app.setNumberOfLevel(1);

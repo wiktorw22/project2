@@ -5,7 +5,6 @@ import java.util.ArrayList;
 public class CarMap implements ICarMap{
     private int mapWidth;
     private int mapHeight;
-    private int numWrongCars;
     private App app;
     protected Car car; //wlasciwe autko gracza
     protected ArrayList<WrongCar> wrongCarList; //lista aut przeszkadzajacych

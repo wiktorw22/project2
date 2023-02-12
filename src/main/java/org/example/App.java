@@ -1,16 +1,28 @@
 package org.example;
 
+import javafx.animation.AnimationTimer;
+import javafx.animation.PathTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.HPos;
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
 public class App extends Application {
     private int fieldSize = 35;
@@ -29,7 +41,6 @@ public class App extends Application {
     private ProgressBar progressBar;
     private CarMap map;
     private SimulationEngine engine;
-    private MovingWrongCars movingWrongCars;
     private GridPane grid = new GridPane();
     private Scene windowScene;
     public App(int randomNumber){ //randomNumber, to numer wskazujacy typ naszego auta
@@ -40,7 +51,6 @@ public class App extends Application {
         this.engine = new SimulationEngine(new Vector2d(4, 0), map, this);
         this.engine.setNewCar(randomNumber);
         this.map.makePossibleCars(); //metoda ta tworzy liste aut mozliwych do zdobycia w trakcie rozgrywki
-        this.movingWrongCars = new MovingWrongCars(this.map);
         this.windowScene = new Scene(grid, 400, 300);
         engine.setMoveDelay(timeSleep);
 
@@ -70,7 +80,7 @@ public class App extends Application {
         this.gamerAmountOfCoins = amount;
     }
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws FileNotFoundException {
 
         height = this.getCarMap().getMapHeight();
         width = this.getCarMap().getMapWidth();
@@ -101,10 +111,31 @@ public class App extends Application {
 //        Thread thread = new Thread(engine); //watek spowodowalby ponowne uruchomienie metody run rownolegle!
 //        thread.start();
 
-        movingWrongCars.run();
-
         engine.run();
+        moving(this.map.wrongCarList); //metoda odpowiedzialna za poruszanie autami przeszkadzajacymi
 
+    }
+    public void moving(ArrayList<WrongCar> wrongCarArrayList) {
+        AnimationTimer timer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                for (WrongCar wrongCar : wrongCarArrayList) {
+                    int newX = wrongCar.getCarPosition().getX() + 1;
+                    if (newX >= map.getMapWidth()) {
+                        newX = 0;
+                    }
+                    wrongCar.setPosition(new Vector2d(newX, wrongCar.getCarPosition().getY()));
+                    carsCollision(); //sprawdza czy nie nastapilo zderzenie aut
+                }
+                refresh(randomNumber);
+            }
+        };
+        timer.start();
     }
     public void carsCollision(){
         for (WrongCar value : this.map.wrongCarList) {
@@ -170,15 +201,8 @@ public class App extends Application {
     public Button nextStepButton() { //wykonuje kolejny ruch samochodzika
         Button nextStepButton = new Button(" Next step! ");
         nextStepButton.setOnAction((action) -> {
-            try {
-                Thread.sleep(600); //timeSleep
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
             this.map.car.move();
             refreshProgressBarPositive(progressBar);
-            Thread thread = new Thread(movingWrongCars);
-            thread.start();
             carsCollision(); //obsluguje sytuacje zderzen aut na mapie
             this.refresh(this.getRandomNumber());
             if(this.map.car.getCarPosition().getY() == this.map.getMapHeight()-1){
@@ -203,7 +227,7 @@ public class App extends Application {
         }
         return buyButton;
     }
-    public void newGrid(int randomNumber){
+    public void newGrid(int randomNumber) throws FileNotFoundException {
 
         int width = fieldSize ;
         int height = fieldSize;
@@ -232,9 +256,9 @@ public class App extends Application {
             GridPane.setHalignment(label, HPos.CENTER);
         }
 
-        for (int x = 0; x < this.map.getMapWidth(); x++){
+        for (final int[] x = {0}; x[0] < this.map.getMapWidth(); x[0]++){
             for (int y = 0; y < this.map.getMapHeight(); y++){
-                Vector2d position = new Vector2d(x, y);
+                Vector2d position = new Vector2d(x[0], y);
 
                 VBox box;
                 if(this.map.isOccupied(position)){
@@ -273,11 +297,10 @@ public class App extends Application {
                     box = new GuiElementBox(path, objectSize).getVBox();
                 }
 
-                grid.add(box, x+1, y+1);
+                grid.add(box, x[0] +1, y+1);
                 GridPane.setHalignment(box, HPos.CENTER);
             }
         }
-
     }
     public void refresh(int randomNumber) { //odswieza aktualny stan mapy (jej widok dla uzytkownika)
         Platform.runLater( () -> {
@@ -287,7 +310,11 @@ public class App extends Application {
             grid.setGridLinesVisible(false);
             deletePrevAmountOfCoins();
             printAmountOfCoins(vBox);
-            this.newGrid(randomNumber);
+            try {
+                this.newGrid(randomNumber);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 }
